@@ -41,13 +41,36 @@ public class CustomerController {
     }
 
     @GetMapping("/customers/{id}")
-    public ResponseEntity<Customer> getSingleCustomers(@PathVariable Long id){
+    public ResponseEntity<Customer> getSingleCustomers(@PathVariable Long id) {
         Optional<Customer> customer = customerRepo.findById(id);
 
-        if(customer.isPresent()) {
+        if (customer.isPresent()) {
             return new ResponseEntity<Customer>(customer.get(), HttpStatus.OK);
         }
         return new ResponseEntity<Customer>(HttpStatus.NOT_FOUND);
     }
 
+
+    @PutMapping("/customers/{id}")
+    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer) {
+        try {
+            return new ResponseEntity<Customer>(customerRepo.save(customer), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/customer/{id}")
+    public ResponseEntity<HttpStatus> deleteCustomer(@PathVariable Long id) {
+        try {
+            Optional<Customer> customer = customerRepo.findById(id);
+            if (customer.isPresent()) {
+                customerRepo.delete(customer.get());
+            }
+            return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+    }
 }
